@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESHS Timer</title>
     <link rel="stylesheet" href="stylesheet.css">
+    <script src="timer.js"></script>
 </head>
 <body>
 
@@ -14,12 +15,12 @@
     </noscript>
     
     <!-- Timer -->
-    <div>
+    <div id="timerContainer" hidden>
         
     </div>
 
     <!-- Configuration -->
-    <div class="container">
+    <div class="container" id="configContainer">
         <h1 id="title">Welcome to ESHS Timer</h1>
 
         <div class="container lg" id="configForm">
@@ -31,30 +32,30 @@
             <!-- Interval -->
             <div class="row">
                 <div class="col sm">
-                    <label for="">Interval length:</label>
+                    <label for="intervalCtrl">Interval length:</label>
                 </div>
                 <div class="col lg">
-                    <input type="range" name="" id="" min="5" max="60" step="5" value="10">
+                    <input type="range" name="intervalCtrl" id="intervalCtrl" min="5" max="60" step="5" value="10">
                 </div>
             </div>
 
             <!-- Starting time -->
             <div class="row">
                 <div class="col sm">
-                    <label for="">Starting time:</label>
+                    <label for="startingTimeCtrl">Starting time:</label>
                 </div>
                 <div class="col lg">
-                    <input type="time" name="" id="">
+                    <input type="time" name="startingTimeCtrl" id="startingTimeCtrl">
                 </div>
             </div class="row">
 
             <!-- Volume -->
             <div class="row">
                 <div class="col sm">
-                    <label for="">Volume:</label>
+                    <label for="volumeCtrl">Volume:</label>
                 </div>
                 <div class="col lg">
-                    <input type="range" name="" id="" min="0.1" max="1" step="0.1" value="1">
+                    <input type="range" name="volumeCtrl" id="volumeCtrl" min="0.1" max="1" step="0.1" value="1">
                 </div>
             </div>
 
@@ -64,14 +65,15 @@
                     <label for="">Test volume:</label>        
                 </div>
                 <div class="col lg">
-                    <button>Press me</button>
+                    <button onclick="playBell()">Press me</button>
                 </div>
             </div>
 
             <hr />
 
             <div class="row">
-                <button id="startButton">START</button>
+                <!-- Button is enabled when a starting time is specified -->
+                <button id="startButton" disabled onclick="start()">START</button>
             </div>
 
             <div class="row" style="margin: -2%">
