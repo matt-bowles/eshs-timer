@@ -1,0 +1,64 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    background-image: linear-gradient(69deg, #333366, #339999);
+    color: white;
+
+    /* These settings enable for the gradient to cover the page's entire height (and not repeat) */
+    height: 100%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+/* CONFIGURATION STYLES */
+.container {
+    border: 1px black solid;
+    border-radius: 3%;
+    width: 50%;
+    background-color: #336666;
+    text-align: center;
+    margin: auto;
+    margin-top: 5%;
+    padding: 2%;
+}
+
+#configForm {
+    background-color: #339999
+}
+
+.row {
+    width: 70%;
+    display: inline-block;
+    padding: 5px;
+    margin: 2% 0 2% 0;
+}
+
+.col {
+    display: inline-block;
+    width: 49%;
+}
+
+.sm { width: 43% }
+.lg { width: 55% }
+
+label {
+    float: left;
+    font-weight: bold;
+}
+
+input, .col button {
+    float: left;
+    margin-left: 7.5%;
+
+    width: 100%;
+}
+
+hr {
+    width: 75%;
+    color: white;
+}
+
+#startButton {
+    width: 75%;
+}
