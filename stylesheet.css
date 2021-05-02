@@ -54,6 +54,10 @@ input, .col button {
     width: 100%;
 }
 
+#startingTimeCtrl {
+      font-family: Arial, Helvetica, sans-serif;
+  }
+
 hr {
     width: 75%;
     color: white;
@@ -61,4 +65,18 @@ hr {
 
 #startButton {
     width: 75%;
+}
+
+.range-wrap {
+    position: relative;
+    margin: auto;
+}
+
+.bubble {
+    background: #333366;
+    padding: 4px;
+    position: absolute;
+    border-radius: 4px;
+    transform: translateX(-20%);
+    bottom: 50%;
 }

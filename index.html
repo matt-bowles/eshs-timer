@@ -16,7 +16,7 @@
     
     <!-- Timer -->
     <div id="timerContainer" hidden>
-        
+
     </div>
 
     <!-- Configuration -->
@@ -27,7 +27,7 @@
 
             <h3>Configure your settings here.</h3>
 
-            <hr />
+            <hr style="margin-bottom: 4%;" />
 
             <!-- Interval -->
             <div class="row">
@@ -35,7 +35,25 @@
                     <label for="intervalCtrl">Interval length:</label>
                 </div>
                 <div class="col lg">
-                    <input type="range" name="intervalCtrl" id="intervalCtrl" min="5" max="60" step="5" value="10">
+                    <div class="range-wrap">
+                        <input type="range" name="intervalCtrl" class="range" id="intervalCtrl" min="5" max="60" step="5" value="10" list="intervalList">
+                        <datalist id="intervalList">
+                            <!-- Edge/Chrome tickmarks -->
+                            <option>5</option>
+                            <option>10</option>
+                            <option>15</option>
+                            <option>20</option>
+                            <option>25</option>
+                            <option>30</option>
+                            <option>35</option>
+                            <option>40</option>
+                            <option>45</option>
+                            <option>50</option>
+                            <option>55</option>
+                            <option>60</option>
+                        </datalist>
+                        <output for="intervalCtrl" class="bubble"></output>
+                    </div>
                 </div>
             </div>
 
@@ -55,7 +73,23 @@
                     <label for="volumeCtrl">Volume:</label>
                 </div>
                 <div class="col lg">
-                    <input type="range" name="volumeCtrl" id="volumeCtrl" min="0.1" max="1" step="0.1" value="1">
+                    <div class="range-wrap">
+                        <input type="range" list="volumeList" class="range" name="volumeCtrl" id="volumeCtrl" min="0.1" max="1" step="0.1" value="1">
+                        <datalist id="volumeList">
+                            <!-- Edge/Chrome tickmarks -->
+                            <option>0.1</option>
+                            <option>0.2</option>
+                            <option>0.3</option>
+                            <option>0.4</option>
+                            <option>0.5</option>
+                            <option>0.6</option>
+                            <option>0.7</option>
+                            <option>0.8</option>
+                            <option>0.9</option>
+                            <option>1</option>
+                        </datalist>
+                        <output for="volumeCtrl" class="bubble"></output>
+                    </div>
                 </div>
             </div>
 
