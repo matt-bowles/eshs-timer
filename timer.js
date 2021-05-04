@@ -115,6 +115,7 @@ function downTo2(hr) {
 function setStartingTimeText() {
     if (Number(startingTime.substr(0, 2)) > 12) {
         var temp = String(Number(startingTime.substr(0, 2) - 12));
+        temp = pad(temp);
 
         // TODO: Needs AM, too
         startingTime = `${temp}:${startingTime.substr(3, 5)} PM`;
