@@ -9,14 +9,13 @@ html {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    
+    /* Hides scrollbar */
+    overflow: hidden;
 }
 
-/* CONFIGURATION STYLES */
 .container {
-    border: 1px black solid;
-    border-radius: 3%;
     width: 50%;
-    background-color: #336666;
     text-align: center;
     margin: auto;
     margin-top: 5%;
@@ -25,9 +24,14 @@ html {
 
 #configForm {
     background-color: #339999;
+    border: 1px black solid;
+    border-radius: 3%;
 }
 
 #configContainer {
+    border: 1px black solid;
+    border-radius: 3%;
+    background-color: #336666;
     box-shadow: 9px 10px 100px 1px rgba(0,0,0,0.5);
 }
 
