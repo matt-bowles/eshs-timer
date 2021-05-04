@@ -16,7 +16,10 @@
     
     <!-- Timer -->
     <div id="timerContainer" hidden>
-
+        <h1>Current Time: <span id="currentTime"></span></h1>
+        <h2>Starting at: <span id="startingTime"></span></h2>
+        <br />
+        <h2>Current Session: <span id="sessStart"></span> - <span id="sessEnd"></span></h2>
     </div>
 
     <!-- Configuration -->
@@ -107,7 +110,7 @@
 
             <div class="row">
                 <!-- Button is enabled when a starting time is specified -->
-                <button id="startButton" disabled onclick="start()">START</button>
+                <button id="startButton" disabled onclick="start()">Start</button>
             </div>
 
             <div class="row" style="margin: -2%">
