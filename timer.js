@@ -9,6 +9,10 @@ var i = 0;
  * The core logic loop of the program.
  */
 function start() {
+
+    // Make page fullscreen
+    document.documentElement.requestFullscreen();
+
     // Hide configuration menu and show timer
     document.querySelector("#configContainer").style.visibility = "hidden";
     document.querySelector("#timerContainer").removeAttribute("hidden");
