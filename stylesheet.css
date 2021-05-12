@@ -9,9 +9,6 @@ html {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    
-    /* Hides scrollbar */
-    overflow: hidden;
 }
 
 .container {
@@ -55,7 +52,7 @@ label {
     font-weight: bold;
 }
 
-input, .col button {
+input, select, .col button {
     float: left;
     margin-left: 7.5%;
 
@@ -63,8 +60,34 @@ input, .col button {
 }
 
 #startingTimeCtrl {
-      font-family: Arial, Helvetica, sans-serif;
-  }
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+table {
+	border: black 2px solid;
+	padding: 3px;
+}
+
+td {
+    min-width: 100px;
+    max-width: 100px;
+}
+
+  
+.removeCurRow, .addNewRow {
+	cursor: pointer;
+	font-weight: bold;
+    min-width: 10px;
+    max-width: 10px;
+}
+
+.removeCurRow {
+	color: red;
+}
+
+.addNewRow {
+	color: green;
+}
 
 hr {
     width: 75%;

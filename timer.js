@@ -1,7 +1,12 @@
 var interval = 10;
 var startingTime;
 var sessStart, sessEnd;
+var mode;
 var bell = new Audio("./media/bell.mp3");
+
+// Timer mode enums
+const modes = {"INTERVIEW": 1, "EXAM": 2};
+Object.freeze(modes);
 
 var i = 0;
 
@@ -9,6 +14,9 @@ var i = 0;
  * The core logic loop of the program.
  */
 function start() {
+
+    // Hide scrollbar
+    document.getElementsByTagName("html")[0].style.overflow = "hidden";
 
     // Make page fullscreen
     document.documentElement.requestFullscreen();
@@ -146,6 +154,8 @@ window.onload = () => {
     var intervalCtrl = document.querySelector("#intervalCtrl");
     var startingTimeCtrl = document.querySelector("#startingTimeCtrl");
     var volumeCtrl = document.querySelector("#volumeCtrl");
+	
+	var blockCtrl = document.querySelector("#blockCtrl");
 
     intervalCtrl.addEventListener("input", (e) => {
         interval = e.target.value;
@@ -161,6 +171,19 @@ window.onload = () => {
     volumeCtrl.addEventListener("input", (e) => {
         bell.volume = e.target.value;
     });
+	
+	modeCtrl.addEventListener("input", (e) => {
+		mode = modes[e.target.value];
+		
+        // Toggle settings that are exclusive to a particular option
+		if (mode == modes["INTERVIEW"]) {
+			document.querySelector("#blockCtrl").parentNode.parentNode.style.display = "none";
+			document.querySelector("#intervalCtrl").parentNode.parentNode.parentNode.style.display = "inline-block";
+		} else {
+			document.querySelector("#blockCtrl").parentNode.parentNode.style.display = "inline-block";
+			document.querySelector("#intervalCtrl").parentNode.parentNode.parentNode.style.display = "none";
+		}
+	});
 
     document.querySelectorAll(".range-wrap").forEach((rangeWrap) => {
         const range = rangeWrap.querySelector(".range");
@@ -174,6 +197,39 @@ window.onload = () => {
         // Show bubbles on initial pageload
         setBubblePos(range, bubble);
     });
+
+    // Populate exam block times with defaults
+    var defaultTimes = [{ text: "Preperation", length: 10 }, { text: "Main", length: 90 }, { text: "Final", length: 5 }];
+    var rowTemplate = document.querySelector("#rowTemplate");
+
+    defaultTimes.forEach((dt) => {
+
+        var content = document.importNode(rowTemplate.content, true);
+
+        // TODO: hide "minus" button from first row
+
+        var inputs = content.querySelectorAll("input");
+
+        inputs[0].value = dt.text;
+        inputs[1].value = dt.length;
+        
+        document.querySelector("#blockCtrl").appendChild(content);
+    });
+}
+
+function removeCurRow(row) {
+    row.parentNode.remove();
+}
+
+function addNewRow(row) {
+    var nextRow = row.parentElement.nextElementSibling;
+
+    console.log(nextRow);
+
+    var rowTemplate = document.querySelector("#rowTemplate");
+    var content = document.importNode(rowTemplate.content, true);
+
+    var n = row.parentNode.parentNode.insertBefore(content, nextRow);
 }
 
 

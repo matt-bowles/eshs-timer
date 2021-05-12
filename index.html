@@ -33,7 +33,50 @@
 
             <h3>Configure your settings here.</h3>
 
+            <div class="row">
+                <div class="col" style="display: inline-block;">
+
+                    <input id="configUpload" type="file" hidden />
+
+                    <button onclick="document.querySelector('#configUpload').click()">Import config</button>
+                    <button>Export config</button>
+                </div>
+            </div>
+
             <hr style="margin-bottom: 4%;" />
+			
+			<!-- Select mode -->
+			<div class="row">
+				<div class="col sm">
+					<label for="modeCtrl">Select mode:</label>
+				</div>
+				<div class="col lg">
+					<select id="modeCtrl" name="modeCtrl">
+						<option value="INTERVIEW">P/T interviews</option>
+						<option value="EXAM">Examinations</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="row" style="display: none;">
+				<div class="col sm">
+					<label>Configure blocks:</label>
+				</div>
+				<div class="col lg">
+					<table id="blockCtrl">
+						<tr id="headerRow">
+							<th>Title</th>
+							<th>Duration (mins)</th>
+							<th></th> <!-- Add row below --->
+							<th></th> <!-- Remove current row -->
+						</tr>
+						
+						<!-- Dummy row -->
+						<tr style="display: none"></tr>
+						
+					</table>
+				</div>
+			</div>
 
             <!-- Interval -->
             <div class="row">
@@ -124,5 +167,15 @@
         </div>
 
     </div>
+	
+    <template id="rowTemplate">
+        <tr class="row2">
+            <td><input type="text"/></td>
+            <td><input type="number" min="1" style="width: 45%;" /></td>
+            <td class="addNewRow" onclick="addNewRow(this)">+</td>
+            <td class="removeCurRow" onclick="removeCurRow(this)">-</td>
+        </tr>
+    </template>
+	
 </body>
 </html>
