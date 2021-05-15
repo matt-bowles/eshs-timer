@@ -395,8 +395,7 @@ function addNewRow(row) {
 
     var content = document.importNode(rowTemplate.content, true);
 	content.addEventListener("input", () => updateExamBlockData());
-
-    row.parentNode.parentNode.insert(content, nextRow);
+    row.parentNode.parentNode.insertBefore(content, nextRow);
 }
 
 /**
