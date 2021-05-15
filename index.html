@@ -185,8 +185,8 @@
 	
     <template id="rowTemplate">
         <tr class="examRow">
-            <td><input type="text" oninput="needABetterNameLol()" /></td>
-            <td><input class="timeInput" type="number" min="1" style="width: 45%;" oninput="updateTotalExamTime(); needABetterNameLol();" /></td>
+            <td><input type="text" oninput="updateExamBlockData()" /></td>
+            <td><input class="timeInput" type="number" min="1" style="width: 45%;" oninput="updateTotalExamTime(); updateExamBlockData();" /></td>
             <td class="addNewRow" onclick="addNewRow(this)">+</td>
             <td class="removeCurRow" onclick="removeCurRow(this)">-</td>
         </tr>

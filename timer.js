@@ -171,7 +171,7 @@ function newExamSession(index) {
 		// **the recursive call**
 		newExamSession(index + 1);
 
-    }, examBlocks[index].duration * 1000 * 60);
+    }, examBlocks[index - 1].duration * 1000 * 60);
 }
 
 /**
