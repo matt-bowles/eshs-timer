@@ -14,9 +14,9 @@
         <h1><i>This program requires Javascript to be enabled.</i></h1>
     </noscript>
     
-    <!-- Timer -->
-    <div id="timerContainer" class="container" hidden>
-        <h1>Current Time: <span id="currentTime"></span></h1>
+    <!-- Interview timer -->
+    <div id="interviewTimerContainer" class="container" hidden>
+        <h1>Current Time: <span class="currentTime"></span></h1>
 
         <img id="logo" src="./media/logo.png" alt="">
 
@@ -24,6 +24,18 @@
 
         <h2>Current Session: <span id="sessStart"></span> - <span id="sessEnd"></span></h2>
     </div>
+	
+	<!-- Exam timer -->
+	<div id="examTimerContainer" class="container" hidden style="width: 90%; position: absolute; top: 15%;">
+	
+		<div id="blocks" class="col sm" style="width: 20%">
+			
+		</div>
+		
+		<div class="col lg" style="width: 75%">
+			<h1><span class="currentTime" style="font-size: 220px"></span></h1>
+		</div>
+	</div>
 
     <!-- Configuration -->
     <div class="container" id="configContainer">
@@ -34,12 +46,12 @@
             <h3>Configure your settings here.</h3>
 
             <div class="row">
-                <div class="col" style="display: inline-block;">
+                <div class="row" style="display: inline-block;">
 
-                    <input id="configUpload" type="file" hidden />
+                    <input id="importConfig" type="file" accept=".timer" onchange="importConfig(this)" hidden />
 
-                    <button onclick="document.querySelector('#configUpload').click()">Import config</button>
-                    <button>Export config</button>
+                    <button onclick="document.querySelector('#importConfig').click()">Import config</button>
+                    <button onclick="exportConfig()">Export config</button>
                 </div>
             </div>
 
@@ -48,11 +60,11 @@
 			<!-- Select mode -->
 			<div class="row">
 				<div class="col sm">
-					<label for="modeCtrl">Select mode:</label>
+					<label for="modeCtrl">Mode:</label>
 				</div>
 				<div class="col lg">
 					<select id="modeCtrl" name="modeCtrl">
-						<option value="INTERVIEW">P/T interviews</option>
+						<option value="INTERVIEW" selected>P/T interviews</option>
 						<option value="EXAM">Examinations</option>
 					</select>
 				</div>
@@ -75,6 +87,9 @@
 						<tr style="display: none"></tr>
 						
 					</table>
+					
+					<span>Total duration: <span id="totalDuration"></span></span>
+					
 				</div>
 			</div>
 
@@ -169,13 +184,19 @@
     </div>
 	
     <template id="rowTemplate">
-        <tr class="row2">
-            <td><input type="text"/></td>
-            <td><input type="number" min="1" style="width: 45%;" /></td>
+        <tr class="examRow">
+            <td><input type="text" oninput="needABetterNameLol()" /></td>
+            <td><input class="timeInput" type="number" min="1" style="width: 45%;" oninput="updateTotalExamTime(); needABetterNameLol();" /></td>
             <td class="addNewRow" onclick="addNewRow(this)">+</td>
             <td class="removeCurRow" onclick="removeCurRow(this)">-</td>
         </tr>
     </template>
+	
+	<template id="blockTemplate">
+		<div class="block">
+			<span><span class="blockName"></span>: <span class="blockStart"></span> - <span class="blockEnd"></span></span>
+		</div>
+	</template>
 	
 </body>
 </html>

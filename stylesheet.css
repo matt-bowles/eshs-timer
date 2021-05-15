@@ -1,3 +1,4 @@
+/* GENERAL CSS */
 html {
     font-family: Arial, Helvetica, sans-serif;
     background-image: linear-gradient(69deg, #333366, #339999);
@@ -19,19 +20,6 @@ html {
     padding: 2%;
 }
 
-#configForm {
-    background-color: #339999;
-    border: 1px black solid;
-    border-radius: 3%;
-}
-
-#configContainer {
-    border: 1px black solid;
-    border-radius: 3%;
-    background-color: #336666;
-    box-shadow: 9px 10px 100px 1px rgba(0,0,0,0.5);
-}
-
 .row {
     width: 70%;
     display: inline-block;
@@ -47,6 +35,26 @@ html {
 .sm { width: 43% }
 .lg { width: 55% }
 
+hr {
+    width: 75%;
+    color: white;
+}
+
+/* CONFIG CSS - BOTH INTERVIEW/EXAM */
+
+#configForm {
+    background-color: #339999;
+    border: 1px black solid;
+    border-radius: 3%;
+}
+
+#configContainer {
+    border: 1px black solid;
+    border-radius: 3%;
+    background-color: #336666;
+    box-shadow: 9px 10px 100px 1px rgba(0,0,0,0.5);
+}
+
 label {
     float: left;
     font-weight: bold;
@@ -61,41 +69,6 @@ input, select, .col button {
 
 #startingTimeCtrl {
     font-family: Arial, Helvetica, sans-serif;
-}
-
-table {
-	border: black 2px solid;
-	padding: 3px;
-}
-
-td {
-    min-width: 100px;
-    max-width: 100px;
-}
-
-  
-.removeCurRow, .addNewRow {
-	cursor: pointer;
-	font-weight: bold;
-    min-width: 10px;
-    max-width: 10px;
-}
-
-.removeCurRow {
-	color: red;
-}
-
-.addNewRow {
-	color: green;
-}
-
-hr {
-    width: 75%;
-    color: white;
-}
-
-#startButton {
-    width: 75%;
 }
 
 .range-wrap {
@@ -153,4 +126,46 @@ button:disabled {
 
 #volumeButton {
     padding: 4px 16px;
+}
+
+/* CONFIG CSS - EXAM ONLY */
+
+table {
+	border: black 2px solid;
+	padding: 3px;
+}
+
+td {
+    min-width: 100px;
+    max-width: 100px;
+}
+  
+.removeCurRow, .addNewRow {
+	cursor: pointer;
+	font-weight: bold;
+    min-width: 10px;
+    max-width: 10px;
+}
+
+.removeCurRow {
+	color: red;
+}
+
+.addNewRow {
+	color: green;
+}
+
+.examRow {
+    background-color: white;
+}
+
+.block {
+	color: white;
+	font-size: 24px;
+}
+
+.block-active {
+	color: yellow;
+	font-size: 32px;
+	font-weight: bold;
 }
