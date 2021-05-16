@@ -164,14 +164,26 @@ function newExamSession(index) {
 		// Stikeout the last block when it has finished playing, and revert back to normal text
 		document.querySelector(`.block:nth-child(${index})`).style.textDecoration = "line-through";
 		document.querySelector(`.block:nth-child(${index})`).classList.remove("block-active");
-		
+
 		// Add active to block
-		document.querySelector(`.block:nth-child(${index + 1})`).classList.add("block-active");
-		
+		try {
+			document.querySelector(`.block:nth-child(${index + 1})`).classList.add("block-active");
+		} catch(e) {
+			return examFinished();
+		}
 		// **the recursive call**
 		newExamSession(index + 1);
 
-    }, examBlocks[index - 1].duration * 1000 * 60);
+	}, examBlocks[index - 1].duration * 1000 * 60);
+}
+
+function examFinished() {
+	var uiElements = document.querySelectorAll("#blocks, .currentTime");
+	uiElements.forEach((ui) => ui.style.display = "none");
+	document.querySelector("#finishText").style.display = "inline-block";
+
+	// Untoggle fullscreen
+	
 }
 
 /**
@@ -296,7 +308,8 @@ window.onload = () => {
     });
 
     // Populate exam block times with defaults
-    examBlocks = [{ text: "Perusal", duration: 10 }, { text: "Main", duration: 60 }, { text: "Finish", duration: 5 }];
+    // examBlocks = [{ text: "Perusal", duration: 10 }, { text: "Main", duration: 60 }, { text: "Finish", duration: 5 }];
+    examBlocks = [{ text: "Perusal", duration: 1 }, { text: "Main", duration: 1 }];
 
     createExamBlockRows();
 	updateTotalExamTime();
