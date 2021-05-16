@@ -307,11 +307,15 @@ window.onload = () => {
  */
 function createExamBlockRows() {
 
-	examBlocks.forEach((eb) => {
+	examBlocks.forEach((eb, index) => {
 
 		var content = document.importNode(rowTemplate.content, true);
 
-		// TODO: hide "minus" button from first row
+		// Hide "minus" button from first row
+		if (index == 0) {
+			content.querySelector(".removeCurRow").style.display = "none";
+		}
+		
 		var inputs = content.querySelectorAll("input");
 
 		inputs[0].value = eb.text;
@@ -353,19 +357,17 @@ function updateTotalExamTime() {
 	var mins = sum%60;
 	var hrs = (sum-mins)/60;
 
-	// Format mins/hrs 
+	// Format mins/hrs
 	var fMins = (mins > 1) ? `${mins} mins` : `${mins} min`;
-	if (hrs !== 0) {
-		var fHrs = (hrs > 1) ? `${hrs} hrs` : `${hrs} hr`;
-	}
 
-	var formattedTime;
+	var formattedTime = "";
 	
 	// Add "s" if longer than one hour
-	if (hrs != 0) {
-		formattedTime = fHrs;
+	if (hrs !== 0) {
+		formattedTime = fHrs = (hrs > 1) ? `${hrs} hrs` : `${hrs} hr`;
 	}
 	
+	// Add mins if not a full hour AND longer than a single hour
 	if (mins !== 0) {
 		if (formattedTime != "") {
 			formattedTime += ", "
