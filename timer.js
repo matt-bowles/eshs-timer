@@ -37,7 +37,7 @@ function start() {
     document.documentElement.requestFullscreen();
 	
 	// Hide config screen
-	document.querySelector("#configContainer").style.visibility = "hidden";
+	document.querySelector("#configContainer").style.display = "none";
 	
 	var startingTimeHour = startingTime.split(":")[0];
 	var startingTimeMin = startingTime.split(":")[1];
@@ -153,13 +153,13 @@ function newExamSession(index) {
 	
 	// Done
 	if (index > examBlocks.length) {
-		alert("Done")
+		// alert("Done")
 	}
 	
 	// Recursively run all of the required timer blocks.
 	setTimeout(() => {
 
-		playBell();
+		// playBell();
 		
 		// Stikeout the last block when it has finished playing, and revert back to normal text
 		document.querySelector(`.block:nth-child(${index})`).style.textDecoration = "line-through";
@@ -183,7 +183,7 @@ function examFinished() {
 	document.querySelector("#finishText").style.display = "inline-block";
 
 	// Untoggle fullscreen
-	
+	playBell();
 }
 
 /**
@@ -237,15 +237,16 @@ function setStartingTimeText() {
         temp = pad(temp);
 
         // TODO: Needs AM, too
-        startingTime = `${temp}:${startingTime.substr(3, 5)} PM`;
+        // startingTime = `${temp}:${startingTime.substr(3, 5)} PM`;
+        startingTime = `${temp}:${startingTime.substr(3, 5)}`;
 
         if ((startingTime.substr(0, 2)).includes(":")) {
             startingTime = pad(startingTime);
         }
     } else if (startingTime.substr(0, 2) == 12) {
-        startingTime += " PM";
+        // startingTime += " PM";
     } else {
-        startingTime += " AM";
+        // startingTime += " AM";
     }
 
     document.querySelector("#startingTime").textContent = startingTime;
@@ -326,7 +327,7 @@ function createExamBlockRows() {
 
 		// Hide "minus" button from first row
 		if (index == 0) {
-			content.querySelector(".removeCurRow").style.display = "none";
+			content.querySelector(".removeCurRow").style.visibility = "hidden";
 		}
 		
 		var inputs = content.querySelectorAll("input");
@@ -395,9 +396,21 @@ function updateTotalExamTime() {
  * Removes a passed row and updates the total exam duration
  * @param {*} row 
  */
-function removeCurRow(row) {
+ async function removeCurRow(row) {
+	row.parentNode.style.animation = "popOut 0.2s 1";
+	await sleep(120);
+	row.parentNode.style.transform = "display: scale(0)";
     row.parentNode.remove();
 	updateTotalExamTime();
+	updateExamBlockData();
+}
+
+/**
+* "Sleep" for a specified amount of time
+* @param {*} sleep milliseconds
+*/
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -411,6 +424,9 @@ function addNewRow(row) {
     var content = document.importNode(rowTemplate.content, true);
 	content.addEventListener("input", () => updateExamBlockData());
     row.parentNode.parentNode.insertBefore(content, nextRow);
+
+	updateTotalExamTime();
+	updateExamBlockData();
 }
 
 /**
@@ -452,7 +468,7 @@ function importConfig(fileInput) {
 		startingTimeCtrl.value = startingTime;
 		
 		// Hide/show certain controls depending on the mode specified in the config file
-		intervalCtrl.parentNode.parentNode.style.display = (config.mode == modes.INTERVIEW ? "inline-block" : "none");
+		intervalCtrl.parentNode.parentNode.parentNode.style.display = (config.mode == modes.INTERVIEW ? "inline-block" : "none");
 		blockCtrl.parentNode.parentNode.style.display = (config.mode == modes.EXAM ? "inline-block" : "none");
 
 		if (mode == modes.EXAM) {
