@@ -5,15 +5,17 @@ var mode;
 var bell = new Audio("./media/bell.mp3");
 var examBlocks = [];
 
+var cdMins, cdSecs;
+
 // Timer mode enums
-const modes = {"INTERVIEW": 1, "EXAM": 2};
+const modes = {"INTERVIEW": 1, "EXAM": 2, "COUNTDOWN": 3};
 Object.freeze(modes);
 
 // set default mode
 mode = modes.INTERVIEW;
 
 // Input control references
-var intervalCtrl, startingTimeCtrl, volumeCtrl, blockCtrl, modeCtrl;
+var intervalCtrl, startingTimeCtrl, volumeCtrl, blockCtrl, modeCtrl, cdMinsCtrl, cdSecsCtrl;
 
 // Interview only - used to keep count of the current session number 
 var i = 0;
@@ -39,11 +41,6 @@ function start() {
 	// Hide config screen
 	document.querySelector("#configContainer").style.display = "none";
 	
-	var startingTimeHour = startingTime.split(":")[0];
-	var startingTimeMin = startingTime.split(":")[1];
-
-    // Time formatting and padding bullshit
-    setStartingTimeText();
 
 	// Show appropriate timer screen
 	if (mode == modes.INTERVIEW) {
@@ -53,6 +50,17 @@ function start() {
 		document.querySelector("#examTimerContainer").removeAttribute("hidden");
 		setExamBlocksText(examBlocks);
 	}
+	else if (mode == modes.COUNTDOWN) {
+		document.querySelector("#countdownContainer").removeAttribute("hidden");
+
+		return startCountdown();
+	}
+
+	var startingTimeHour = startingTime.split(":")[0];
+	var startingTimeMin = startingTime.split(":")[1];
+
+    // Time formatting and padding bullshit
+    setStartingTimeText();
 	
 	// Get num of seconds until the countdown starts (i.e. num ms to specified "starting time")
     var date = new Date();
@@ -94,7 +102,12 @@ function startClock() {
 
 	setInterval(() => {
 		var now = new Date();
-		clocks.forEach(c => c.textContent = `${pad(convertTo12hrs(now.getHours()))}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`)
+
+		var fHrs = convertTo12hrs(now.getHours()).padStart(2,0);
+		var fMins = String(now.getMinutes()).padStart(2,0);
+		var fSecs = String(now.getSeconds()).padStart(2,0);
+
+		clocks.forEach(c => c.textContent = `${fHrs}:${fMins}:${fSecs}`)
 	}, 100);
 }
 
@@ -186,6 +199,29 @@ function examFinished() {
 	playBell();
 }
 
+async function startCountdown() {
+	var msToGo = (cdMins*1000*60) + (cdSecs*1000);
+	var min, sec;
+	var cdText = document.querySelector("#countdownTime");
+
+	while (msToGo > 0) {
+		
+		min = String(Math.floor((msToGo/1000/60) << 0));
+		sec = String(Math.floor((msToGo/1000) % 60));
+
+		// Update shit here
+		cdText.textContent = `${min.padStart(2, 0)}:${sec.padStart(2, 0)}`
+
+		await sleep(1000);
+
+		msToGo -= 1000;
+	}
+
+	cdText.textContent = `00:00`;
+
+	playBell();
+}
+
 /**
  * Adds a specified number of minutes to the starting time and then returns the result ().
  * @param {*} numMins The number of minutes to be added to the starting time.
@@ -206,20 +242,7 @@ function addMins(time, numMins) {
         stMins = 0;
     }
 
-    return `${pad(convertTo12hrs(stHrs))}:${pad(stMins)}`;
-}
-
-/**
- * Pads a number with a leading 0, so that it is 2 digits.
- * @param {*} num a value representing a minute or an hour
- * @returns String
- */
-function pad(num) {
-    if (num < 10) {
-        return `0${num}`
-    } else {
-        return String(num);
-    }
+    return `${convertTo12hrs(stHrs).padStart(2,0)}:${`${stMins}`.padStart(2,0)}`;
 }
 
 /**
@@ -228,20 +251,20 @@ function pad(num) {
  * @returns 
  */
 function convertTo12hrs(hr) {
-	return (hr > 12) ? String(hr-12) : hr;
+	return (hr > 12) ? `${hr-12}` : `${hr}`;
 }
 
 function setStartingTimeText() {
     if (Number(startingTime.substr(0, 2)) > 12) {
         var temp = String(Number(startingTime.substr(0, 2) - 12));
-        temp = pad(temp);
+        temp = temp.padStart(2,0);
 
         // TODO: Needs AM, too
         // startingTime = `${temp}:${startingTime.substr(3, 5)} PM`;
         startingTime = `${temp}:${startingTime.substr(3, 5)}`;
 
         if ((startingTime.substr(0, 2)).includes(":")) {
-            startingTime = pad(startingTime);
+            startingTime = startingTime.padStart(2,0);
         }
     } else if (startingTime.substr(0, 2) == 12) {
         // startingTime += " PM";
@@ -264,6 +287,8 @@ window.onload = () => {
 	volumeCtrl = document.querySelector("#volumeCtrl");
 	blockCtrl = document.querySelector("#blockCtrl");
 	modeCtrl = document.querySelector("#modeCtrl");
+	cdMinsCtrl  = document.querySelector("#cdMinsCtrl");
+	cdSecsCtrl = document.querySelector("#cdSecsCtrl");
 
 	rowTemplate = document.querySelector("#rowTemplate")
 
@@ -287,12 +312,40 @@ window.onload = () => {
 		
         // Toggle settings that are exclusive to a particular option
 		if (mode == modes["INTERVIEW"]) {
-			document.querySelector("#blockCtrl").parentNode.parentNode.style.display = "none";
-			document.querySelector("#intervalCtrl").parentNode.parentNode.parentNode.style.display = "inline-block";
-		} else {
-			document.querySelector("#blockCtrl").parentNode.parentNode.style.display = "inline-block";
-			document.querySelector("#intervalCtrl").parentNode.parentNode.parentNode.style.display = "none";
+			blockCtrl.parentNode.parentNode.style.display = "none";
+			intervalCtrl.parentNode.parentNode.parentNode.style.display = "inline-block";
+			startingTimeCtrl.parentNode.parentNode.style.display = "inline-block";
+			document.querySelector("#countdownRow").style.display = "none";
 		}
+		else if (mode == modes["EXAM"]) {
+			blockCtrl.parentNode.parentNode.style.display = "inline-block";
+			intervalCtrl.parentNode.parentNode.parentNode.style.display = "none";
+			startingTimeCtrl.parentNode.parentNode.style.display = "inline-block";
+			document.querySelector("#countdownRow").style.display = "none";
+		}
+		else if (mode == modes["COUNTDOWN"]) {
+			blockCtrl.parentNode.parentNode.style.display = "none";
+			intervalCtrl.parentNode.parentNode.parentNode.style.display = "none";
+			startingTimeCtrl.parentNode.parentNode.style.display = "none";
+			document.querySelector("#countdownRow").style.display = "inline-block";
+		}
+	});
+
+	cdMinsCtrl.addEventListener("input", (e) => {
+		cdMins = e.target.value;
+
+		cdEnableStartButton();
+	});
+	
+	cdSecsCtrl.addEventListener("input", (e) => {
+		let val = e.target.value;
+
+		val = (e.target.value > 59) ?  59 : e.target.value;
+
+		cdSecsCtrl.value = val;
+		cdSecs = val;
+
+		cdEnableStartButton();
 	});
 
     document.querySelectorAll(".range-wrap").forEach((rangeWrap) => {
@@ -314,6 +367,17 @@ window.onload = () => {
 
     createExamBlockRows();
 	updateTotalExamTime();
+}
+
+/**
+ * Countdown mode - enable the start button if both inputs are filled in, otherwise disable it.
+ */
+function cdEnableStartButton() {
+	if (cdMinsCtrl.value !== "" && cdSecsCtrl.value !== "") {
+		document.querySelector("#startButton").disabled = false;
+	} else {
+		document.querySelector("#startButton").disabled = true;
+	}
 }
 
 /**
@@ -525,7 +589,9 @@ function exportConfig() {
 		interval,
 		startingTime,
 		examBlocks,
-		volume: bell.volume
+		volume: bell.volume,
+		cdMins,
+		cdSecs
 	}
 	
 	var filename = prompt("Please specify a filename:");

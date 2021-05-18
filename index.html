@@ -38,6 +38,13 @@
 		</div>
 	</div>
 
+    <!-- Countdown -->
+    <div id="countdownContainer" class="container" hidden style="width: 95%; position: absolute; top: 5%;">
+        <div class="col lg" style="width: 90%">
+            <h1 id="countdownTime" style="font-size: 220px"></h1>
+        </div>
+    </div>
+
     <!-- Configuration -->
     <div class="container" id="configContainer">
         <h1 id="title">Welcome to ESHS Timer</h1>
@@ -67,6 +74,7 @@
 					<select id="modeCtrl" name="modeCtrl">
 						<option value="INTERVIEW" selected>P/T interviews</option>
 						<option value="EXAM">Examinations</option>
+                        <option value="COUNTDOWN">Countdown</option>
 					</select>
 				</div>
 			</div>
@@ -131,6 +139,20 @@
                     <input type="time" name="startingTimeCtrl" id="startingTimeCtrl">
                 </div>
             </div class="row">
+
+            <div class="row" id="countdownRow" style="display: none">
+                <div class="col sm">
+                    <label for="">Countdown duration:</label>
+                </div>
+                <div class="col lg">
+                    <div style="display: inline-block;">
+                    </div>
+                    <div style="display: inline-block;">
+                        <input type="number" name="cdMinsCtrl" id="cdMinsCtrl" placeholder="Minutes" min="0" style="width: 45%; float: left;">
+                        <input type="number" name="cdSecsCtrl" id="cdSecsCtrl" placeholder="Seconds" min="0" max="59" style="width: 45%; float: right;">
+                    </div>
+                </div>
+            </div>
 
             <!-- Volume -->
             <div class="row">
