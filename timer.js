@@ -6,6 +6,7 @@ var bell = new Audio("./media/bell.mp3");
 var examBlocks = [];
 
 var cdMins, cdSecs;
+var cdTitle, cdDescription;
 
 // Timer mode enums
 const modes = {"INTERVIEW": 1, "EXAM": 2, "COUNTDOWN": 3};
@@ -15,7 +16,7 @@ Object.freeze(modes);
 mode = modes.INTERVIEW;
 
 // Input control references
-var intervalCtrl, startingTimeCtrl, volumeCtrl, blockCtrl, modeCtrl, cdMinsCtrl, cdSecsCtrl;
+var intervalCtrl, startingTimeCtrl, volumeCtrl, blockCtrl, modeCtrl, cdMinsCtrl, cdSecsCtrl, cdTitleCtrl, cdDescriptionCtrl;
 
 // Interview only - used to keep count of the current session number 
 var i = 0;
@@ -29,11 +30,14 @@ var rowTemplate;
  */
 function start() {
 
+	// Show close button
+	document.querySelector("#closeButton").style.display = "inline-block"
+
     // Hide scrollbar
     document.getElementsByTagName("html")[0].style.overflow = "hidden";
 	
 	// Hide mouse cursor
-	document.getElementsByTagName("html")[0].style.cursor = "none";
+	// document.getElementsByTagName("html")[0].style.cursor = "none";
 
     // Make page fullscreen
     document.documentElement.requestFullscreen();
@@ -52,7 +56,15 @@ function start() {
 	}
 	else if (mode == modes.COUNTDOWN) {
 		document.querySelector("#countdownContainer").removeAttribute("hidden");
-
+		
+		if (cdMinsCtrl.value == "") {
+			cdMins = 0;
+		}
+		
+		if (cdSecsCtrl.value == "") {
+			cdSecs = 0;
+		}
+	
 		return startCountdown();
 	}
 
@@ -77,6 +89,7 @@ function start() {
 
 			// Get rid of the starting at "hh:mm" text
 			document.querySelector("#startingTime").parentNode.style.display = "none";
+			document.querySelector("#currentSession").removeAttribute("hidden");
 		}
 		else if (mode == modes.EXAM) {
 			// The exam has started, so mark the first "block" as active
@@ -131,6 +144,35 @@ function newInterviewSession() {
         playBell();
         newInterviewSession();
     }, interval*60*1000);
+}
+
+function closePage() {
+	// Disable fullscreen
+	if (!document.fullscreenElement &&    // alternative standard method
+		!document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+	  if (document.documentElement.requestFullscreen) {
+		document.documentElement.requestFullscreen();
+	  } else if (document.documentElement.msRequestFullscreen) {
+		document.documentElement.msRequestFullscreen();
+	  } else if (document.documentElement.mozRequestFullScreen) {
+		document.documentElement.mozRequestFullScreen();
+	  } else if (document.documentElement.webkitRequestFullscreen) {
+		document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+	  }
+	} else {
+	  if (document.exitFullscreen) {
+		document.exitFullscreen();
+	  } else if (document.msExitFullscreen) {
+		document.msExitFullscreen();
+	  } else if (document.mozCancelFullScreen) {
+		document.mozCancelFullScreen();
+	  } else if (document.webkitExitFullscreen) {
+		document.webkitExitFullscreen();
+	  }
+	}
+
+	// Refresh page
+	location.reload();
 }
 
 /**
@@ -204,11 +246,25 @@ async function startCountdown() {
 	var min, sec;
 	var cdText = document.querySelector("#countdownTime");
 
+	if (cdTitle) {
+		var cdt = document.querySelector("#cdTitle");
+
+		cdt.parentNode.style.visibility = "inline-block";
+		cdt.textContent = cdTitle;
+	}
+
+	if (cdDescription) {
+		var cdd = document.querySelector("#cdDescription");
+
+		cdd.parentNode.style.visibility= "inline-block";
+		cdd.textContent = cdDescription
+	}
+
 	while (msToGo > 0) {
 		
 		min = String(Math.floor((msToGo/1000/60) << 0));
 		sec = String(Math.floor((msToGo/1000) % 60));
-
+		
 		// Update shit here
 		cdText.textContent = `${min.padStart(2, 0)}:${sec.padStart(2, 0)}`
 
@@ -289,6 +345,8 @@ window.onload = () => {
 	modeCtrl = document.querySelector("#modeCtrl");
 	cdMinsCtrl  = document.querySelector("#cdMinsCtrl");
 	cdSecsCtrl = document.querySelector("#cdSecsCtrl");
+	cdTitleCtrl = document.querySelector("#cdTitleCtrl");
+	cdDescriptionCtrl = document.querySelector("#cdDescriptionCtrl");
 
 	rowTemplate = document.querySelector("#rowTemplate")
 
@@ -311,23 +369,30 @@ window.onload = () => {
 		mode = modes[e.target.value];
 		
         // Toggle settings that are exclusive to a particular option
+		// TODO: this shit is way too inefficient
 		if (mode == modes["INTERVIEW"]) {
 			blockCtrl.parentNode.parentNode.style.display = "none";
 			intervalCtrl.parentNode.parentNode.parentNode.style.display = "inline-block";
 			startingTimeCtrl.parentNode.parentNode.style.display = "inline-block";
 			document.querySelector("#countdownRow").style.display = "none";
+			cdTitleCtrl.parentNode.parentNode.style.display = "none";
+			cdDescriptionCtrl.parentNode.parentNode.style.display = "none";
 		}
 		else if (mode == modes["EXAM"]) {
 			blockCtrl.parentNode.parentNode.style.display = "inline-block";
 			intervalCtrl.parentNode.parentNode.parentNode.style.display = "none";
 			startingTimeCtrl.parentNode.parentNode.style.display = "inline-block";
 			document.querySelector("#countdownRow").style.display = "none";
+			cdTitleCtrl.parentNode.parentNode.style.display = "none";
+			cdDescriptionCtrl.parentNode.parentNode.style.display = "none";
 		}
 		else if (mode == modes["COUNTDOWN"]) {
 			blockCtrl.parentNode.parentNode.style.display = "none";
 			intervalCtrl.parentNode.parentNode.parentNode.style.display = "none";
 			startingTimeCtrl.parentNode.parentNode.style.display = "none";
 			document.querySelector("#countdownRow").style.display = "inline-block";
+			cdTitleCtrl.parentNode.parentNode.style.display = "inline-block";
+			cdDescriptionCtrl.parentNode.parentNode.style.display = "inline-block";
 		}
 	});
 
@@ -348,6 +413,14 @@ window.onload = () => {
 		cdEnableStartButton();
 	});
 
+	cdTitleCtrl.addEventListener("input", (e) => {
+		cdTitle = e.target.value;
+	});
+
+	cdDescriptionCtrl.addEventListener("input", (e) => {
+		cdDescription = e.target.value;
+	});
+
     document.querySelectorAll(".range-wrap").forEach((rangeWrap) => {
         const range = rangeWrap.querySelector(".range");
         const bubble = rangeWrap.querySelector(".bubble");
@@ -362,8 +435,10 @@ window.onload = () => {
     });
 
     // Populate exam block times with defaults
-    // examBlocks = [{ text: "Perusal", duration: 10 }, { text: "Main", duration: 60 }, { text: "Finish", duration: 5 }];
-    examBlocks = [{ text: "Perusal", duration: 1 }, { text: "Main", duration: 1 }];
+    examBlocks = [{ text: "Perusal", duration: 10 }, { text: "Main", duration: 60 }, { text: "Finish", duration: 5 }];
+    // examBlocks = [{ text: "Perusal", duration: 1 }, { text: "Main", duration: 1 }];
+    // examBlocks = [{ text: "Perusal", duration: 0.02 }];
+
 
     createExamBlockRows();
 	updateTotalExamTime();
@@ -373,10 +448,11 @@ window.onload = () => {
  * Countdown mode - enable the start button if both inputs are filled in, otherwise disable it.
  */
 function cdEnableStartButton() {
-	if (cdMinsCtrl.value !== "" && cdSecsCtrl.value !== "") {
-		document.querySelector("#startButton").disabled = false;
-	} else {
+	
+	if (cdMinsCtrl.value == "" && cdSecsCtrl.value == "") {
 		document.querySelector("#startButton").disabled = true;
+	} else {
+		document.querySelector("#startButton").disabled = false;
 	}
 }
 
@@ -453,7 +529,7 @@ function updateTotalExamTime() {
 		formattedTime += fMins;
 	}
 	
-	document.querySelector("#totalDuration").innerHTML = formattedTime;
+	document.querySelector("#totalDuration").innerHTML = `Total duration: ${formattedTime}`;
 }
 
 /**
@@ -516,6 +592,7 @@ function importConfig(fileInput) {
 		var options = modeCtrl.querySelectorAll("option");
 		options[0].selected = (mode == modes.INTERVIEW) ? true : false;
 		options[1].selected = (mode == modes.EXAM) ? true : false;
+		options[2].selected = (mode == modes.COUNTDOWN) ? true : false;
 
 		// Set bell volume settings
 		bell.volume = config.volume;
@@ -545,6 +622,26 @@ function importConfig(fileInput) {
 			// Construct new exam rows from data specified in the config file
 			createExamBlockRows();
 			updateTotalExamTime();
+		}
+		
+		if (mode == modes.COUNTDOWN) {
+			startingTimeCtrl.parentNode.parentNode.style.display = "none";
+			document.querySelector("#countdownRow").style.display = "inline-block";
+
+			cdTitleCtrl.parentNode.parentNode.style.display = "inline-block";
+			cdDescriptionCtrl.parentNode.parentNode.style.display = "inline-block";
+			
+			cdMins = config.cdMins;
+			cdMinsCtrl.value = cdMins;
+			
+			cdSecs = config.cdSecs;
+			cdSecsCtrl.value = cdSecs;
+
+			cdTitle = config.cdTitle;
+			cdTitleCtrl.value = cdTitle;
+
+			cdDescription = config.cdDescription;
+			cdDescriptionCtrl.value = cdDescription;
 		}
 
 		// Enable the START button
@@ -591,7 +688,9 @@ function exportConfig() {
 		examBlocks,
 		volume: bell.volume,
 		cdMins,
-		cdSecs
+		cdSecs,
+		cdTitle,
+		cdDescription
 	}
 	
 	var filename = prompt("Please specify a filename:");

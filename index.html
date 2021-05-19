@@ -14,6 +14,8 @@
         <h1><i>This program requires Javascript to be enabled.</i></h1>
     </noscript>
     
+	<span id="closeButton" onclick="closePage()" hidden title="Exit">x</span>
+	
     <!-- Interview timer -->
     <div id="interviewTimerContainer" class="container" hidden>
         <h1>Current Time: <span class="currentTime"></span></h1>
@@ -22,18 +24,18 @@
 
         <h2>Starting at: <span id="startingTime"></span></h2>
 
-        <h2>Current Session: <span id="sessStart"></span> - <span id="sessEnd"></span></h2>
+        <h2 id="currentSession" hidden>Current Session: <span id="sessStart"></span> - <span id="sessEnd"></span></h2>
     </div>
 	
 	<!-- Exam timer -->
-	<div id="examTimerContainer" class="container" hidden style="width: 95%; position: absolute; top: 15%;">
+	<div id="examTimerContainer" class="container" hidden>
 	
-		<div id="blocks" class="col sm" style="width: 20%">
+		<div id="blocks" class="col sm">
 			
 		</div>
 		
-		<div class="col lg" style="width: 60%">
-			<h1><span class="currentTime" style="font-size: 220px"></span></h1>
+		<div class="col lg">
+			<h1><span class="currentTime"></span></h1>
             <h1 id="finishText" style="font-size: 220px; display: none;">Exam finished.</h1>
 		</div>
 	</div>
@@ -41,7 +43,19 @@
     <!-- Countdown -->
     <div id="countdownContainer" class="container" hidden style="width: 95%; position: absolute; top: 5%;">
         <div class="col lg" style="width: 90%">
-            <h1 id="countdownTime" style="font-size: 220px"></h1>
+            
+            <div style="visibility: none">
+                <h1 id="cdTitle"></h1>
+            </div>
+
+
+            <div class="row">
+                <h1 id="countdownTime" style="font-size: 220px"></h1>
+            </div>
+
+            <div style="visibility: none">
+                <h3 id="cdDescription"></h3>
+            </div>
         </div>
     </div>
 
@@ -72,7 +86,7 @@
 				</div>
 				<div class="col lg">
 					<select id="modeCtrl" name="modeCtrl">
-						<option value="INTERVIEW" selected>P/T interviews</option>
+						<option value="INTERVIEW" selected>Parent/teacher interviews</option>
 						<option value="EXAM">Examinations</option>
                         <option value="COUNTDOWN">Countdown</option>
 					</select>
@@ -154,6 +168,25 @@
                 </div>
             </div>
 
+            <div class="row" style="display: none;">
+                <div class="col sm">
+                    <label for="cdTitleCtrl">Countdown title:</label>
+                </div>
+
+                <div class="col lg">
+                    <input type="text" name="cdTitleCtrl" id="cdTitleCtrl" placeholder="Countdown title (optional)">
+                </div>
+            </div>
+
+            <div class="row" style="display: none;">
+                <div class="col sm">
+                    <label for="cdDescriptionCtrl">Countdown description:</label>
+                </div>
+                <div class="col lg">
+                    <textarea name="cdDescriptionCtrl" id="cdDescriptionCtrl" cols="27" rows="3" style="resize: none;" placeholder="Countdown description (optional)"></textarea>
+                </div>
+            </div>
+
             <!-- Volume -->
             <div class="row">
                 <div class="col sm">
@@ -198,7 +231,7 @@
             </div>
 
             <div class="row" style="margin: -2%">
-                <p><i>Note: Press "CTRL/CMD+W" to close the program.</i></p>
+				<p>Please direct any feedback/criticism to <a href="mailto:mbowl26@eq.edu.au&subject=ESHS-Timer feedback&body=Hi Matt,%0D%0A%0D%0AYour timer sucks - here's why:">mbowl26@eq.edu.au</a>.</p>
             </div>
 
 

@@ -1,7 +1,6 @@
 /* GENERAL CSS */
 html {
-    font-family: Arial, Helvetica, sans-serif;
-    background-image: linear-gradient(69deg, #333366, #339999);
+    background: linear-gradient(69deg, #333366, #339999);	
     color: white;
 
     /* These settings enable for the gradient to cover the page's entire height (and not repeat) */
@@ -11,6 +10,12 @@ html {
     -o-background-size: cover;
     background-size: cover;
 	font-size: 12px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;	
+}
+
+html, #cdDescriptionCtrl {
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container {
@@ -179,7 +184,7 @@ td {
 
 .block-active {
 	color: yellow;
-	font-size: 32px;
+	/* font-size: 32px; */
 	font-weight: bold;
 }
 
@@ -193,6 +198,28 @@ td {
 }
 
 
+
+
+#examContainer > .currentTime {
+	font-size: 220px;
+}
+
+#blocks {
+	width: 20%;
+}
+
+#examTimerContainer {
+	width: 95%;
+	position: absolute;
+	top: 15%;
+}
+
+
+#examTimerContainer > div.col.lg {
+	width: 60%;
+}
+
+
 @keyframes popIn {
 	from {transform:scale(0)}
 	to {transform:scale(1)}
@@ -201,4 +228,87 @@ td {
 @keyframes popOut {
 	from {transform:scale(1)}
 	to {transform:scale(0)}
+}
+
+/**
+* The following CSS rules need sorting, because I am lazy
+*/
+
+#finishText {
+	font-size: 150px !important;
+	margin-top: 0 !important;
+}
+
+#examTimerContainer .currentTime {
+	font-size: 240px;
+}
+
+#closeButton {
+	color: #336666;
+	font-size: 48px;
+	
+	position: absolute;
+	left: 2%;
+	top: 2%;
+	
+	cursor: pointer;
+	stroke: white;	
+
+    transition: all 0.25s;    
+}
+
+#closeButton:hover {
+    transform: scale(1.2);
+    filter: brightness(1.5);
+}
+
+#cdDescriptionCtrl {
+    width: 100%;
+}
+
+#cdTitle {
+    font-size: 48px;
+    margin-bottom: 0;
+}
+
+#cdDescription {
+    font-size: 32px;
+    margin-top: 0;
+}
+
+
+@media only screen and (max-width: 1366px) {
+	.container {
+		width: 80%;
+	}
+	
+	#examTimerContainer > div.col.lg > h1:nth-child(1) > span {
+		font-size: 160px;
+	}
+	
+	#examTimerContainer > div.col.lg {
+		margin-right: 235px;
+	}
+	
+	#blocks {
+		width: 40%;
+	}
+	
+	#examTimerContainer {
+		right: 10%;
+	}
+	
+	#examTimerContainer > div.col.lg {
+		width: 40%;
+	}
+	
+	#logo {
+		width: 40%;
+	}
+	
+	#interviewTimerContainer {
+		position: absolute;
+		bottom: 5%;
+		left: 5%;
+	}
 }
