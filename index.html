@@ -95,10 +95,10 @@
 			
 			<div class="row" style="display: none;">
 				<div class="col sm">
-					<label>Configure blocks:</label>
+					<label for="blockCtrl">Configure blocks:</label>
 				</div>
 				<div class="col lg">
-					<table id="blockCtrl">
+					<table id="blockCtrl" name="blockCtrl">
 						<tr id="headerRow">
 							<th>Title</th>
 							<th>Duration (mins)</th>
@@ -117,7 +117,7 @@
 			</div>
 
             <!-- Interval -->
-            <div class="row">
+            <div class="row" style="display: none">
                 <div class="col sm">
                     <label for="intervalCtrl">Interval length:</label>
                 </div>
@@ -145,7 +145,7 @@
             </div>
 
             <!-- Starting time -->
-            <div class="row">
+            <div class="row" style="display: none;">
                 <div class="col sm">
                     <label for="startingTimeCtrl">Starting time:</label>
                 </div>
@@ -156,15 +156,15 @@
 
             <div class="row" id="countdownRow" style="display: none">
                 <div class="col sm">
-                    <label for="">Countdown duration:</label>
+                    <label for="cdDuration">Countdown duration:</label>
                 </div>
                 <div class="col lg">
                     <div style="display: inline-block;">
                     </div>
-                    <div style="display: inline-block;">
-                        <input type="number" name="cdMinsCtrl" id="cdMinsCtrl" placeholder="Minutes" min="0" style="width: 45%; float: left;">
-                        <input type="number" name="cdSecsCtrl" id="cdSecsCtrl" placeholder="Seconds" min="0" max="59" style="width: 45%; float: right;">
-                    </div>
+                    <!-- <div style="display: inline-block;"> -->
+                        <input type="number" name="cdDuration" id="cdMinsCtrl" placeholder="Minutes" min="0" style="width: 45%; float: left;">
+                        <input type="number" name="cdDuration" id="cdSecsCtrl" placeholder="Seconds" min="0" max="59" style="width: 45%; float: right;">
+                    <!-- </div> -->
                 </div>
             </div>
 
@@ -174,7 +174,7 @@
                 </div>
 
                 <div class="col lg">
-                    <input type="text" name="cdTitleCtrl" id="cdTitleCtrl" placeholder="Countdown title (optional)">
+                    <input type="text" name="cdTitleCtrl" id="cdTitleCtrl" placeholder="Countdown title (optional)" autocomplete="false">
                 </div>
             </div>
 
@@ -241,7 +241,7 @@
 	
     <template id="rowTemplate">
         <tr class="examRow">
-            <td><input type="text" value="[Text here]" oninput="updateExamBlockData()" /></td>
+            <td><input type="text" value="[Text here]" oninput="updateExamBlockData()" autocomplete="false" /></td>
             <td><input class="timeInput" type="number" value="30" min="1" style="width: 45%;" oninput="updateTotalExamTime(); updateExamBlockData();" /></td>
             <td class="addNewRow" onclick="addNewRow(this)" title="Add new block below current">+</td>
             <td class="removeCurRow" onclick="removeCurRow(this)" title="Remove current block">-</td>

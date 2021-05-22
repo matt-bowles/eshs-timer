@@ -18,11 +18,19 @@ mode = modes.INTERVIEW;
 // Input control references
 var intervalCtrl, startingTimeCtrl, volumeCtrl, blockCtrl, modeCtrl, cdMinsCtrl, cdSecsCtrl, cdTitleCtrl, cdDescriptionCtrl;
 
+var bubbleInputs = [intervalCtrl, volumeCtrl];
+
+var ctrlsByInput = new Map();
+
 // Interview only - used to keep count of the current session number 
 var i = 0;
 
 // Templates
 var rowTemplate;
+
+var inputGroups = new Map();
+
+var inputsInMemory = [];
 
 
 /**
@@ -31,7 +39,7 @@ var rowTemplate;
 function start() {
 
 	// Show close button
-	document.querySelector("#closeButton").style.display = "inline-block"
+	show(document.querySelector("#closeButton"));
 
     // Hide scrollbar
     document.getElementsByTagName("html")[0].style.overflow = "hidden";
@@ -43,7 +51,7 @@ function start() {
     document.documentElement.requestFullscreen();
 	
 	// Hide config screen
-	document.querySelector("#configContainer").style.display = "none";
+	hide(document.querySelector("#configContainer"));
 	
 
 	// Show appropriate timer screen
@@ -57,17 +65,14 @@ function start() {
 	else if (mode == modes.COUNTDOWN) {
 		document.querySelector("#countdownContainer").removeAttribute("hidden");
 		
-		if (cdMinsCtrl.value == "") {
-			cdMins = 0;
-		}
-		
-		if (cdSecsCtrl.value == "") {
-			cdSecs = 0;
-		}
+		// Set countdown mins/secs to 0 if no value is supplied by user
+		cdMins = (cdMinsCtrl.value == "") ? 0 : cdMins;
+		cdSecs = (cdSecsCtrl.value == "") ? 0 : cdSecs;
 	
 		return startCountdown();
 	}
 
+	// This is done for calculating msToStart
 	var startingTimeHour = startingTime.split(":")[0];
 	var startingTimeMin = startingTime.split(":")[1];
 
@@ -81,6 +86,7 @@ function start() {
 	// The core logic  that is initiated at the starting time
     setTimeout(() => {
 
+		// TODO: This probably shouldn't be playing when the exam starts
         playBell();
 		
 		if (mode == modes.INTERVIEW) {
@@ -88,7 +94,7 @@ function start() {
 			newInterviewSession(interval);
 
 			// Get rid of the starting at "hh:mm" text
-			document.querySelector("#startingTime").parentNode.style.display = "none";
+			hide(document.querySelector("#startingTime"));
 			document.querySelector("#currentSession").removeAttribute("hidden");
 		}
 		else if (mode == modes.EXAM) {
@@ -99,7 +105,6 @@ function start() {
 			newExamSession(1);
 		}
     }, msToStart);
-
 
 	// Update current time clock every second
 	startClock();
@@ -113,6 +118,7 @@ function startClock() {
 	// TODO: reduce to one clock shared between both modes
 	var clocks = document.querySelectorAll(".currentTime");
 
+	// Update clock display every tenth of a second, as to remain relatively synchronised with system clock
 	setInterval(() => {
 		var now = new Date();
 
@@ -146,6 +152,9 @@ function newInterviewSession() {
     }, interval*60*1000);
 }
 
+/**
+ * Disables fullscreen and refreshes the page, because reverting to default values is too hard.
+ */
 function closePage() {
 	// Disable fullscreen
 	if (!document.fullscreenElement &&    // alternative standard method
@@ -234,8 +243,8 @@ function newExamSession(index) {
 
 function examFinished() {
 	var uiElements = document.querySelectorAll("#blocks, .currentTime");
-	uiElements.forEach((ui) => ui.style.display = "none");
-	document.querySelector("#finishText").style.display = "inline-block";
+	uiElements.forEach((ui) => hide(ui));
+	show(document.querySelector("#finishText"));
 
 	// Untoggle fullscreen
 	playBell();
@@ -257,11 +266,13 @@ async function startCountdown() {
 		var cdd = document.querySelector("#cdDescription");
 
 		cdd.parentNode.style.visibility= "inline-block";
-		cdd.textContent = cdDescription
+		cdd.textContent = cdDescription;
 	}
 
+	// This is
 	while (msToGo > 0) {
 		
+		// Calculate and subsequently format mins/secs remaining in countdown
 		min = String(Math.floor((msToGo/1000/60) << 0));
 		sec = String(Math.floor((msToGo/1000) % 60));
 		
@@ -273,8 +284,8 @@ async function startCountdown() {
 		msToGo -= 1000;
 	}
 
+	// Countdown finished
 	cdText.textContent = `00:00`;
-
 	playBell();
 }
 
@@ -284,21 +295,22 @@ async function startCountdown() {
  * @returns a string of the formatted time
  */
 function addMins(time, numMins) {
-    var stHrs = Number(time.substr(0, 2));
-    var stMins = Number(time.substr(3, 2));
+    var hrs = Number(time.substr(0, 2));
+    var mins = Number(time.substr(3, 2));
 
-    stMins += Number(numMins);
+    mins += Number(numMins);
 
-    while (stMins >= 60) {
-        stHrs = Number(stHrs) + 1;
-        stMins -= 60;
+	// Reduce mins to under 60, and account for the extra hours this reduction results in
+    while (mins >= 60) {
+        hrs = Number(hrs) + 1;
+        mins -= 60;
     }
 
-    if (stMins == 60) {
-        stMins = 0;
+    if (mins == 60) {
+        mins = 0;
     }
 
-    return `${convertTo12hrs(stHrs).padStart(2,0)}:${`${stMins}`.padStart(2,0)}`;
+    return `${convertTo12hrs(hrs).padStart(2,0)}:${`${mins}`.padStart(2,0)}`;
 }
 
 /**
@@ -332,11 +344,12 @@ function setStartingTimeText() {
 }
 
 function playBell() {
+	// TODO: change to something less ptsd-inducing
     bell.play();
 }
 
 // Run once the page has loaded
-window.onload = () => {
+window.onload = async () => {
     // Setup input handlers
 	intervalCtrl = document.querySelector("#intervalCtrl");
 	startingTimeCtrl = document.querySelector("#startingTimeCtrl");
@@ -348,14 +361,16 @@ window.onload = () => {
 	cdTitleCtrl = document.querySelector("#cdTitleCtrl");
 	cdDescriptionCtrl = document.querySelector("#cdDescriptionCtrl");
 
-	rowTemplate = document.querySelector("#rowTemplate")
+	rowTemplate = document.querySelector("#rowTemplate");
 
     intervalCtrl.addEventListener("input", (e) => {
         interval = e.target.value;
+		localStorage.interval = interval;
     });
 
     startingTimeCtrl.addEventListener("input", (e) => {
         startingTime = e.target.value;
+		localStorage.startingTime = startingTime;
         document.querySelector("#startButton").disabled = false;
 
         // TODO - prevent user from selecting an invalid time (e.g. "before now")
@@ -363,41 +378,21 @@ window.onload = () => {
 
     volumeCtrl.addEventListener("input", (e) => {
         bell.volume = e.target.value;
+		localStorage.volume = bell.volume;
     });
 	
 	modeCtrl.addEventListener("input", (e) => {
+		localStorage.mode = e.target.value;
+		
 		mode = modes[e.target.value];
 		
         // Toggle settings that are exclusive to a particular option
-		// TODO: this shit is way too inefficient
-		if (mode == modes["INTERVIEW"]) {
-			blockCtrl.parentNode.parentNode.style.display = "none";
-			intervalCtrl.parentNode.parentNode.parentNode.style.display = "inline-block";
-			startingTimeCtrl.parentNode.parentNode.style.display = "inline-block";
-			document.querySelector("#countdownRow").style.display = "none";
-			cdTitleCtrl.parentNode.parentNode.style.display = "none";
-			cdDescriptionCtrl.parentNode.parentNode.style.display = "none";
-		}
-		else if (mode == modes["EXAM"]) {
-			blockCtrl.parentNode.parentNode.style.display = "inline-block";
-			intervalCtrl.parentNode.parentNode.parentNode.style.display = "none";
-			startingTimeCtrl.parentNode.parentNode.style.display = "inline-block";
-			document.querySelector("#countdownRow").style.display = "none";
-			cdTitleCtrl.parentNode.parentNode.style.display = "none";
-			cdDescriptionCtrl.parentNode.parentNode.style.display = "none";
-		}
-		else if (mode == modes["COUNTDOWN"]) {
-			blockCtrl.parentNode.parentNode.style.display = "none";
-			intervalCtrl.parentNode.parentNode.parentNode.style.display = "none";
-			startingTimeCtrl.parentNode.parentNode.style.display = "none";
-			document.querySelector("#countdownRow").style.display = "inline-block";
-			cdTitleCtrl.parentNode.parentNode.style.display = "inline-block";
-			cdDescriptionCtrl.parentNode.parentNode.style.display = "inline-block";
-		}
+		showInputsBasedOnMode(mode);
 	});
 
 	cdMinsCtrl.addEventListener("input", (e) => {
 		cdMins = e.target.value;
+		localStorage.cdMins = cdMins;
 
 		cdEnableStartButton();
 	});
@@ -410,15 +405,19 @@ window.onload = () => {
 		cdSecsCtrl.value = val;
 		cdSecs = val;
 
+		localStorage.cdSecs = cdSecs;
+
 		cdEnableStartButton();
 	});
 
 	cdTitleCtrl.addEventListener("input", (e) => {
 		cdTitle = e.target.value;
+		localStorage.cdTitle = cdTitle;
 	});
 
 	cdDescriptionCtrl.addEventListener("input", (e) => {
 		cdDescription = e.target.value;
+		localStorage.cdDescription = cdDescription;
 	});
 
     document.querySelectorAll(".range-wrap").forEach((rangeWrap) => {
@@ -435,13 +434,121 @@ window.onload = () => {
     });
 
     // Populate exam block times with defaults
-    examBlocks = [{ text: "Perusal", duration: 10 }, { text: "Main", duration: 60 }, { text: "Finish", duration: 5 }];
+    defaultExamBlocks = [{ text: "Perusal", duration: 10 }, { text: "Main", duration: 60 }, { text: "Finish", duration: 5 }];
+	examBlocks = defaultExamBlocks;
     // examBlocks = [{ text: "Perusal", duration: 1 }, { text: "Main", duration: 1 }];
     // examBlocks = [{ text: "Perusal", duration: 0.02 }];
 
+	ctrlsByInput["interval"] = intervalCtrl;
+	ctrlsByInput["startingTime"] = startingTimeCtrl;
+	ctrlsByInput["volume"] = volumeCtrl;
+	ctrlsByInput["examBlocks"] = blockCtrl;
+	ctrlsByInput["mode"] = modeCtrl;
+	ctrlsByInput["cdMins"] = cdMinsCtrl;
+	ctrlsByInput["cdSecs"] = cdSecsCtrl;
+	ctrlsByInput["cdTitle"] = cdTitleCtrl;
+	ctrlsByInput["cdDescription"] = cdDescriptionCtrl;
 
-    createExamBlockRows();
+	inputGroups[1] = [intervalCtrl, startingTimeCtrl];								// Interview inputs
+	inputGroups[2] = [blockCtrl, startingTimeCtrl];									// Exam inputs
+	inputGroups[3] = [cdMinsCtrl, cdSecsCtrl, cdTitleCtrl, cdDescriptionCtrl];		// Countdown inputs
+
+	bubbleInputs = [intervalCtrl, volumeCtrl];
+
+	// showInputsBasedOnConfig(mode);
+
+	// TODO: probably doesn't need to be asynchronous
+	loadLocalStorage();
+
+	// Only create default exam blocks if not already present
+	if (examBlocks === defaultExamBlocks) {
+		createExamBlockRows();
+	}
+
 	updateTotalExamTime();
+}
+
+/**
+ * Displays config form inputs based on the current mode.
+ * @param {*} m timer mode - as either an integer or an enum (INTERVIEW by defualt).
+ */
+function showInputsBasedOnMode(m=1) {
+	// Convert enum string to respective integer
+	if (typeof m === 'string') {
+		m = modes[m];
+	}
+
+	// Remove the elements that were visible for the previously selected mode
+	inputsInMemory.forEach((input) => {
+		hide(parentRowFromCtrl(input));
+	});
+
+	// Get a list of nodes to be shown
+	var shownNodes = inputGroups[m];
+	
+	// Reset
+	inputsInMemory = [];
+
+	// Show relevant inputs and add them to memory (to be removed next mode selection)
+	shownNodes.forEach((input) => {
+		show(parentRowFromCtrl(input));
+		inputsInMemory.push(input);
+	});
+}
+
+/**
+ * Returns the overarching "parent" row for a provided input control element
+ * @param {*} ctrl an input element with a "name" attribute
+ * @returns 
+ */
+function parentRowFromCtrl(ctrl) {
+
+	var el = document.querySelector(`label[for="${ctrl.attributes.name.value}"]`);
+
+	while (!el.classList.contains("row")) {
+		el = el.parentNode;
+	}
+
+	return el;
+}
+
+function show(el) {
+	el.style.display = "inline-block";
+}
+
+function hide(el) {
+	el.style.display = "none";
+}
+
+/**
+ * Loads settings from local storage (if available)
+ */
+function loadLocalStorage() {
+	for (const [key, input] of Object.entries(ctrlsByInput)) {
+		if (localStorage[key]) {
+			input.value = localStorage[key];
+			window[key] = localStorage[key];
+		}
+
+		// Here be edge cases
+		if (key == "mode") {
+			// Readjust config UI to only display what is required for the current mode
+			mode = modes[localStorage[key]];
+			showInputsBasedOnMode(localStorage[key]);
+		}
+
+		if (key == "examBlocks") {
+			if (localStorage[key]) {
+				examBlocks = JSON.parse(localStorage.examBlocks);
+				createExamBlockRows();
+			}
+		}
+
+		// Update bubble positions for inputs that use them
+		if (bubbleInputs.includes(input)) {
+			setBubblePos(input.parentNode.querySelector(".range"), input.parentNode.querySelector(".bubble"))
+		}
+	}
 }
 
 /**
@@ -494,6 +601,8 @@ function updateExamBlockData() {
 		var inputs = tr.querySelectorAll("input");
 		examBlocks.push({ text: inputs[0].value, duration: inputs[1].value });
 	});
+
+	localStorage.examBlocks = JSON.stringify(examBlocks);
 }
 
 /**
@@ -674,7 +783,7 @@ function setBubblePos(range, bubble) {
 
     // Reposition bubble to be above the slider button
     var newVal = ((range.value - range.min) * 100) / (range.max - range.min);
-    bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+    bubble.style.left = `calc(${newVal}% + (${0-newVal * 0.15}px))`;
 }
 
 /**
