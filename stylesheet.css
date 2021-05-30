@@ -184,7 +184,7 @@ td {
 
 .block-active {
 	color: yellow;
-	/* font-size: 32px; */
+	font-size: 30px;
 	font-weight: bold;
 }
 
@@ -197,8 +197,11 @@ td {
 	float: none;
 }
 
-
-
+/* TODO: This looks nice, but apparently the border twitches sporadically */
+/* #examCurrentTime {
+    padding-left: 3.5%;
+    border-left: 1px solid white;
+} */
 
 #examContainer > .currentTime {
 	font-size: 220px;

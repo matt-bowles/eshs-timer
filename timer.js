@@ -194,10 +194,10 @@ function setExamBlocksText(eb) {
 
 	var blockTemplate = document.querySelector("#blockTemplate");
 
-	var blockEnd = startingTime;
+	var BETTER_NAME_LATER = startingTime.split(":");
+	var blockEnd = `${(convertTo12hrs(BETTER_NAME_LATER[0])).padStart(2,0)}:${BETTER_NAME_LATER[1]}`;
 	
 	eb.forEach((examBlock) => {
-
 		// Create unique clone of block template
 		var content = document.importNode(blockTemplate.content, true);
 		
@@ -217,12 +217,6 @@ function setExamBlocksText(eb) {
 }
 
 function newExamSession(index) {
-	
-	// Done
-	if (index > examBlocks.length) {
-		// alert("Done")
-	}
-	
 	// Recursively run all of the required timer blocks.
 	setTimeout(() => {
 
@@ -382,12 +376,12 @@ window.onload = async () => {
 
     intervalCtrl.addEventListener("input", (e) => {
         interval = e.target.value;
-		localStorage.interval = interval;
+		sessionStorage.interval = interval;
     });
 
     startingTimeCtrl.addEventListener("input", (e) => {
         startingTime = e.target.value;
-		localStorage.startingTime = startingTime;
+		sessionStorage.startingTime = startingTime;
         document.querySelector("#startButton").disabled = false;
 
         // TODO - prevent user from selecting an invalid time (e.g. "before now")
@@ -395,11 +389,11 @@ window.onload = async () => {
 
     volumeCtrl.addEventListener("input", (e) => {
         bell.volume = e.target.value;
-		localStorage.volume = bell.volume;
+		sessionStorage.volume = bell.volume;
     });
 	
 	modeCtrl.addEventListener("input", (e) => {
-		localStorage.mode = e.target.value;
+		sessionStorage.mode = e.target.value;
 		
 		mode = modes[e.target.value];
 		
@@ -409,7 +403,7 @@ window.onload = async () => {
 
 	cdMinsCtrl.addEventListener("input", (e) => {
 		cdMins = e.target.value;
-		localStorage.cdMins = cdMins;
+		sessionStorage.cdMins = cdMins;
 
 		cdEnableStartButton();
 	});
@@ -422,19 +416,19 @@ window.onload = async () => {
 		cdSecsCtrl.value = val;
 		cdSecs = val;
 
-		localStorage.cdSecs = cdSecs;
+		sessionStorage.cdSecs = cdSecs;
 
 		cdEnableStartButton();
 	});
 
 	cdTitleCtrl.addEventListener("input", (e) => {
 		cdTitle = e.target.value;
-		localStorage.cdTitle = cdTitle;
+		sessionStorage.cdTitle = cdTitle;
 	});
 
 	cdDescriptionCtrl.addEventListener("input", (e) => {
 		cdDescription = e.target.value;
-		localStorage.cdDescription = cdDescription;
+		sessionStorage.cdDescription = cdDescription;
 	});
 
     document.querySelectorAll(".range-wrap").forEach((rangeWrap) => {
@@ -475,7 +469,7 @@ window.onload = async () => {
 	// showInputsBasedOnConfig(mode);
 
 	// TODO: probably doesn't need to be asynchronous
-	loadLocalStorage();
+	loadSessionStorage();
 
 	// Only create default exam blocks if not already present
 	if (examBlocks === defaultExamBlocks) {
@@ -540,23 +534,23 @@ function hide(el) {
 /**
  * Loads settings from local storage (if available)
  */
-function loadLocalStorage() {
+function loadSessionStorage() {
 	for (const [key, input] of Object.entries(ctrlsByInput)) {
-		if (localStorage[key]) {
-			input.value = localStorage[key];
-			window[key] = localStorage[key];
+		if (sessionStorage[key]) {
+			input.value = sessionStorage[key];
+			window[key] = sessionStorage[key];
 		}
 
 		// Here be edge cases
 		if (key == "mode") {
 			// Readjust config UI to only display what is required for the current mode
-			mode = modes[localStorage[key]];
-			showInputsBasedOnMode(localStorage[key]);
+			mode = modes[sessionStorage[key]];
+			showInputsBasedOnMode(sessionStorage[key]);
 		}
 
 		if (key == "examBlocks") {
-			if (localStorage[key]) {
-				examBlocks = JSON.parse(localStorage.examBlocks);
+			if (sessionStorage[key]) {
+				examBlocks = JSON.parse(sessionStorage.examBlocks);
 				createExamBlockRows();
 			}
 		}
@@ -619,7 +613,7 @@ function updateExamBlockData() {
 		examBlocks.push({ text: inputs[0].value, duration: inputs[1].value });
 	});
 
-	localStorage.examBlocks = JSON.stringify(examBlocks);
+	sessionStorage.examBlocks = JSON.stringify(examBlocks);
 }
 
 /**
@@ -746,7 +740,7 @@ function importConfig(fileInput) {
 			trs.forEach(tr => tr.remove());
 
 			// Construct new exam rows from data specified in the config file
-			createExamBlockRows();
+			createExamBlockRows(examBlocks);
 			updateTotalExamTime();
 		}
 		
