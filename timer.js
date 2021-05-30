@@ -2,7 +2,7 @@ var interval = 10;
 var sessStart, sessEnd;
 var startingTime;
 var mode;
-var bell = new Audio("./media/bell.mp3");
+var bell = new Audio()
 var examBlocks = [];
 
 var cdMins, cdSecs;
@@ -14,6 +14,9 @@ Object.freeze(modes);
 
 // set default mode
 mode = modes.INTERVIEW;
+
+const bellSounds = {"START": "bell-start.ogg", "END": "bell-end.ogg"}
+Object.freeze(bellSounds);
 
 // Input control references
 var intervalCtrl, startingTimeCtrl, volumeCtrl, blockCtrl, modeCtrl, cdMinsCtrl, cdSecsCtrl, cdTitleCtrl, cdDescriptionCtrl;
@@ -247,7 +250,7 @@ function examFinished() {
 	show(document.querySelector("#finishText"));
 
 	// Untoggle fullscreen
-	playBell();
+	playBell(bellSounds.END);
 }
 
 async function startCountdown() {
@@ -286,7 +289,7 @@ async function startCountdown() {
 
 	// Countdown finished
 	cdText.textContent = `00:00`;
-	playBell();
+	playBell(bellSounds.END);
 }
 
 /**
@@ -343,8 +346,22 @@ function setStartingTimeText() {
     document.querySelector("#startingTime").textContent = startingTime;
 }
 
-function playBell() {
-	// TODO: change to something less ptsd-inducing
+function playBell(sound=bellSounds.START) {
+	var bellSound;
+	
+	switch (sound) {
+		case bellSounds.START:
+			bellSound = "bell-start.ogg";
+			break;
+		case bellSounds.END:
+			bellSound = "bell-end.ogg";
+			break;
+		default:
+			bellSound = "bell-start.ogg";
+			break;
+	}
+	
+	bell.src = `./media/${bellSound}`;
     bell.play();
 }
 
